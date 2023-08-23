@@ -9,18 +9,20 @@
  */
 char *_strcpy(char *_dest, char *_src)
 {
-	int x = 0;
+	int x;
 
-	if (_dest == _src || _src == 0)
-		return (_dest);
-	while (_src[x])
-	{
-		_dest[x] = _src[x];
-		x++;
-	}
-	_dest[x] = 0;
-	return (_dest);
+    if (_dest == _src || _src == 0)
+        return _dest;
+
+    for (x = 0; _src[x]; x++)
+    {
+        _dest[x] = _src[x];
+    }
+    
+    _dest[x] = 0;
+    return _dest;
 }
+
 
 /**
  * _strdup - duplicates a string
@@ -28,22 +30,32 @@ char *_strcpy(char *_dest, char *_src)
  *
  * Return: pointer to the duplicated string
  */
+
 char *_strdup(const char *strr)
 {
-	int lengths = 0;
-	char *rt;
+    int lengths = 0;
+    char *rt;
 
-	if (strr == NULL)
-		return (NULL);
-	while (*strr++)
-		lengths++;
-	rt = malloc(sizeof(char) * (lengths + 1));
-	if (!rt)
-		return (NULL);
-	for (lengths++; lengths--;)
-		rt[lengths] = *--strr;
-	return (rt);
+    if (strr == NULL)
+        return NULL;
+
+    for (; *strr; strr++)
+        lengths++;
+
+    rt = malloc(sizeof(char) * (lengths + 1));
+    if (!rt)
+        return NULL;
+
+    lengths++;
+    while (lengths--)
+    {
+        lengths--;
+        rt[lengths] = *strr--;
+    }
+
+    return rt;
 }
+
 
 /**
  *_puts - prints an input string
@@ -51,18 +63,18 @@ char *_strdup(const char *strr)
  *
  * Return: Nothing
  */
+
 void _puts(char *strr)
 {
-	int x = 0;
+    if (!strr)
+        return;
 
-	if (!strr)
-		return;
-	while (strr[x] != '\0')
-	{
-		_putchar(strr[x]);
-		x++;
-	}
+    for (int x = 0; strr[x] != '\0'; x++)
+    {
+        _putchar(strr[x]);
+    }
 }
+
 
 /**
  * _putchar - writes the character c to stdout
@@ -71,17 +83,20 @@ void _puts(char *strr)
  * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
+
 int _putchar(char ch)
 {
-	static int x;
-	static char buf[WRITE_BUF_SIZE];
+    static int x;
+    static char buf[WRITE_BUF_SIZE];
 
-	if (ch == BUF_FLUSH || x >= WRITE_BUF_SIZE)
-	{
-		write(1, buf, x);
-		x = 0;
-	}
-	if (ch != BUF_FLUSH)
-		buf[x++] = ch;
-	return (1);
+    if (ch == BUF_FLUSH || x >= WRITE_BUF_SIZE)
+    {
+        write(1, buf, x);  // Write the contents of the buffer to standard output
+        x = 0;  // Reset the buffer index
+    }
+
+    if (ch != BUF_FLUSH)
+        buf[x++] = ch;  // Add the character to the buffer
+
+    return 1;  // Return 1 to indicate success
 }

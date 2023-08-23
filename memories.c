@@ -6,13 +6,15 @@
  *
  * Return: 1 if freed, otherwise 0.
  */
+
 int bfree(void **ptrr)
 {
-	if (ptrr && *ptrr)
-	{
-		free(*ptrr);
-		*ptrr = NULL;
-		return (1);
-	}
-	return (0);
+    if (!ptrr || !*ptrr)
+    {
+        return 0;  // No memory to free
+    }
+    
+    free(*ptrr);  // Free the memory pointed to by *ptrr
+    *ptrr = NULL; // Set the original pointer to NULL
+    return 1;     // Memory freed successfully
 }

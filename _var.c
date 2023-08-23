@@ -75,28 +75,36 @@ void check_chain(info_t *inf, char *buff, size_t *pp, size_t x, size_t _len)
  *
  * Return: 1 if replaced, 0 otherwise
  */
+
+
 int replace_alias(info_t *inf)
 {
-	int x;
-	list_t *nodes;
-	char *pp;
+    int x = 0;
+    list_t *nodes;
+    char *pp;
 
-	for (x = 0; x < 10; x++)
-	{
-		nodes = node_starts_with(inf->alias, inf->argv[0], '=');
-		if (!nodes)
-			return (0);
-		free(inf->argv[0]);
-		pp = _strchr(nodes->str, '=');
-		if (!pp)
-			return (0);
-		pp = _strdup(pp + 1);
-		if (!pp)
-			return (0);
-		inf->argv[0] = pp;
-	}
-	return (1);
+    while (x < 10)
+    {
+        nodes = node_starts_with(inf->alias, inf->argv[0], '=');
+        if (!nodes)
+            return 0;
+
+        free(inf->argv[0]);
+        pp = _strchr(nodes->str, '=');
+        if (!pp)
+            return 0;
+
+        pp = _strdup(pp + 1);
+        if (!pp)
+            return 0;
+
+        inf->argv[0] = pp;
+        x++;
+    }
+    return 1;
 }
+
+
 
 /**
  * replace_vars - replaces vars in the tokenized string
@@ -104,40 +112,54 @@ int replace_alias(info_t *inf)
  *
  * Return: 1 if replaced, 0 otherwise
  */
+
+
 int replace_vars(info_t *inf)
 {
-	int x = 0;
-	list_t *nodes;
+    int x = 0;
+    list_t *nodes;
 
-	for (x = 0; inf->argv[x]; x++)
-	{
-		if (inf->argv[x][0] != '$' || !inf->argv[x][1])
-			continue;
+    while (inf->argv[x])
+    {
+        if (inf->argv[x][0] != '$' || !inf->argv[x][1])
+        {
+            x++;
+            continue;
+        }
 
-		if (!_strcmp(inf->argv[x], "$?"))
-		{
-			replace_string(&(inf->argv[x]),
-				_strdup(convert_number(inf->status, 10, 0)));
-			continue;
-		}
-		if (!_strcmp(inf->argv[x], "$$"))
-		{
-			replace_string(&(inf->argv[x]),
-				_strdup(convert_number(getpid(), 10, 0)));
-			continue;
-		}
-		nodes = node_starts_with(inf->env, &inf->argv[x][1], '=');
-		if (nodes)
-		{
-			replace_string(&(inf->argv[x]),
-				_strdup(_strchr(nodes->str, '=') + 1));
-			continue;
-		}
-		replace_string(&inf->argv[x], _strdup(""));
+        if (!_strcmp(inf->argv[x], "$?"))
+        {
+            replace_string(&(inf->argv[x]),
+                _strdup(convert_number(inf->status, 10, 0)));
+            x++;
+            continue;
+        }
 
-	}
-	return (0);
+        if (!_strcmp(inf->argv[x], "$$"))
+        {
+            replace_string(&(inf->argv[x]),
+                _strdup(convert_number(getpid(), 10, 0)));
+            x++;
+            continue;
+        }
+
+        nodes = node_starts_with(inf->env, &inf->argv[x][1], '=');
+        if (nodes)
+        {
+            replace_string(&(inf->argv[x]),
+                _strdup(_strchr(nodes->str, '=') + 1));
+        }
+        else
+        {
+            replace_string(&(inf->argv[x]), _strdup(""));
+        }
+
+        x++;
+    }
+
+    return 0;
 }
+
 
 /**
  * replace_string - replaces string

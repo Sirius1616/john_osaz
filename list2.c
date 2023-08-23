@@ -6,17 +6,17 @@
  *
  * Return: size of list
  */
-size_t list_len(const list_t *hd)
-{
-	size_t x = 0;
 
-	while (hd)
-	{
-		hd = hd->next;
-		x++;
-	}
-	return (x);
+size_t list_len(const list_t *hd) {
+    size_t count = 0;
+
+    for (; hd; hd = hd->next) {
+        count++;
+    }
+
+    return count;
 }
+
 
 /**
  * list_to_strings - returns an array of strings of the list->str
@@ -24,34 +24,40 @@ size_t list_len(const list_t *hd)
  *
  * Return: array of strings
  */
-char **list_to_strings(list_t *heads)
-{
-	list_t *node = heads;
-	size_t x = list_len(heads), y;
-	char **strrs;
-	char *strr;
 
-	if (!heads || !x)
-		return (NULL);
-	strrs = malloc(sizeof(char *) * (x + 1));
-	if (!strrs)
-		return (NULL);
-	for (x = 0; node; node = node->next, x++)
-	{
-		strr = malloc(_strlen(node->str) + 1);
-		if (!strr)
-		{
-			for (y = 0; y < x; y++)
-				free(strrs[y]);
-			free(strrs);
-			return (NULL);
-		}
 
-		strr = _strcpy(strr, node->str);
-		strrs[x] = strr;
-	}
-	strrs[x] = NULL;
-	return (strrs);
+char **list_to_strings(list_t *heads) {
+    size_t length = 0;
+    list_t *node = heads;
+    
+    // Calculate the length of the list
+    while (node) {
+        length++;
+        node = node->next;
+    }
+    
+    // Allocate memory for the string array
+    char **str_array = malloc(sizeof(char *) * (length + 1));
+    if (!str_array)
+        return NULL;
+    
+    // Copy the strings into the array
+    node = heads;
+    for (size_t i = 0; i < length; i++) {
+        str_array[i] = strdup(node->str);
+        if (!str_array[i]) {
+            for (size_t j = 0; j < i; j++) {
+                free(str_array[j]);
+            }
+            free(str_array);
+            return NULL;
+        }
+        node = node->next;
+    }
+    
+    str_array[length] = NULL; // Mark the end of the array
+    
+    return str_array;
 }
 
 
@@ -61,22 +67,21 @@ char **list_to_strings(list_t *heads)
  *
  * Return: size of list
  */
-size_t print_list(const list_t *hd)
-{
-	size_t x = 0;
+size_t print_list(const list_t *hd) {
+    size_t count = 0;
 
-	while (hd)
-	{
-		_puts(convert_number(hd->num, 10, 0));
-		_putchar(':');
-		_putchar(' ');
-		_puts(hd->str ? hd->str : "(nil)");
-		_puts("\n");
-		hd = hd->next;
-		x++;
-	}
-	return (x);
+    for (; hd; hd = hd->next) {
+        _puts(convert_number(hd->num, 10, 0));
+        _putchar(':');
+        _putchar(' ');
+        _puts(hd->str ? hd->str : "(nil)");
+        _puts("\n");
+        count++;
+    }
+
+    return count;
 }
+
 
 /**
  * node_starts_with - returns node whose string starts with prefix
@@ -86,18 +91,15 @@ size_t print_list(const list_t *hd)
  *
  * Return: match node or null
  */
-list_t *node_starts_with(list_t *nodes, char *prefixes, char ch)
-{
-	char *pt = NULL;
 
-	while (nodes)
-	{
-		pt = starts_with(nodes->str, prefixes);
-		if (pt && ((ch == -1) || (*pt == ch)))
-			return (nodes);
-		nodes = nodes->next;
-	}
-	return (NULL);
+list_t *node_starts_with(list_t *nodes, char *prefixes, char ch) {
+    for (; nodes; nodes = nodes->next) {
+        char *pt = starts_with(nodes->str, prefixes);
+        if (pt && (ch == -1 || *pt == ch)) {
+            return nodes;
+        }
+    }
+    return NULL;
 }
 
 /**
@@ -107,16 +109,16 @@ list_t *node_starts_with(list_t *nodes, char *prefixes, char ch)
  *
  * Return: index of node or -1
  */
-ssize_t get_node_index(list_t *heads, list_t *nodes)
-{
-	size_t x = 0;
 
-	while (heads)
-	{
-		if (heads == nodes)
-			return (x);
-		heads = heads->next;
-		x++;
-	}
-	return (-1);
+
+ssize_t get_node_index(list_t *heads, list_t *nodes) {
+    size_t index = 0;
+
+    for (; heads; heads = heads->next, index++) {
+        if (heads == nodes) {
+            return index;
+        }
+    }
+    
+    return -1;
 }
